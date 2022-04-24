@@ -5,8 +5,8 @@
     <home-swiper :banners="banners"></home-swiper>
     <recommend-view :recommends="recommends"></recommend-view>
     <feature-view></feature-view>
-    <tab-control class="tab-control" :titles="titles"></tab-control>
-    <goods-list :goods="goods['pop'].list"></goods-list>
+    <tab-control class="tab-control" :titles="titles" @tabClick="tabClick"></tab-control>
+    <goods-list :goods="showGoods"></goods-list>
 <div> 
   <ul>
       <li>111</li>
@@ -93,7 +93,8 @@ export default {
         'pop':{page:0,list:[]},
         'new':{page:0,list:[]},
         'sell':{page:0,list:[]}
-      }
+      },
+      currentType:'pop'
     }
   },
   created(){
@@ -105,7 +106,34 @@ export default {
     this.getHomeGoods('new')
     this.getHomeGoods('sell')
   },
+  computed:{
+    showGoods(){
+      return this.goods[this.currentType].list
+    }
+  },
   methods:{
+    /**
+     *事件监听相关的方法
+    */
+   tabClick(index){
+     console.log(typeof index)
+     switch (index){
+      case 0:
+        this.currentType = 'pop'
+        break;
+      case 1:
+        this.currentType = 'new'
+        break;
+      case 2:
+        this.currentType = 'sell'
+        break;
+     }
+
+   },
+
+    /**
+     * 网络请求相关的方法
+    */
     getHomeMultidata(){
       getHomeMultidata().then(res=>{   
         this.banners = res.data.banner.list
