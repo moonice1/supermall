@@ -2,62 +2,17 @@
   <!-- <h2>主页</h2> -->
   <div id="home">
     <nav-bar class="home-nav"><div slot="center">购物街</div></nav-bar>
-    <home-swiper :banners="banners"></home-swiper>
+
+    <scroll class="content">
+      <home-swiper :banners="banners"></home-swiper>
     <recommend-view :recommends="recommends"></recommend-view>
     <feature-view></feature-view>
     <tab-control class="tab-control" :titles="titles" @tabClick="tabClick"></tab-control>
     <goods-list :goods="showGoods"></goods-list>
-<div> 
-  <ul>
-      <li>111</li>
-      <li>222</li>
-      <li>222</li>
-      <li>222</li>
-      <li>222</li>
-      <li>222</li>
-      <li>222</li>
-      <li>222</li>
-      <li>222</li>
-      <li>222</li>
-      <li>111</li>
-      <li>222</li>
-      <li>222</li>
-      <li>222</li>
-      <li>222</li>
-      <li>222</li>
-      <li>222</li>
-      <li>222</li>
-      <li>222</li>
-      <li>222</li>
-      <li>111</li>
-      <li>222</li>
-      <li>222</li>
-      <li>222</li>
-      <li>222</li>
-      <li>222</li>
-      <li>222</li>
-      <li>222</li>
-      <li>222</li>
-      <li>222</li>
-      <li>222</li>
-      <li>222</li>
-      <li>222</li>
-      <li>222</li>
-      <li>222</li>
-      <li>222</li>
-      <li>222</li>
-      <li>111</li>
-      <li>222</li>
-      <li>222</li>
-      <li>222</li>
-      <li>222</li>
-      <li>222</li>
-      <li>222</li>
-      <li>222</li>
-    </ul>
-    </div>
+    </scroll>
+    
    
-  </div>
+  </div> 
 
 </template>
 
@@ -69,6 +24,7 @@ import FeatureView from './childComps/FeatureView'
 import NavBar from 'components/common/navbar/NavBar'
 import TabControl from 'components/content/tabControl/TabControl'
 import GoodsList from 'components/content/goods/GoodsList'
+import Scroll from 'components/common/scroll/Scroll'
 
 import {getHomeMultidata,getHomeGoods} from 'network/home'
 
@@ -81,7 +37,8 @@ export default {
     FeatureView,
     NavBar,
     TabControl,
-    GoodsList
+    GoodsList,
+    Scroll,
 
   },
   data(){
@@ -155,7 +112,8 @@ export default {
 
 <style scoped>
 #home{
-  padding-top: 44px;
+  /* padding-top: 44px; */
+  height: 100vh;
 }
 .home-nav{
   background-color: var(--color-tint);
@@ -174,4 +132,20 @@ export default {
   top: 44px;
   z-index: 100;
 }
+
+.content{
+  overflow: hidden;
+  position: absolute;
+  top: 44px;
+  bottom: 49px;
+  left: 0;
+  right: 0;
+}
+
+/* bs方案1 */
+/* .content{
+  height: calc(100%-93px);
+  overflow: hidden;
+  margin-top:44px ;
+} */
 </style>
