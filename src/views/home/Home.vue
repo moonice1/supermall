@@ -2,6 +2,11 @@
   <!-- <h2>主页</h2> -->
   <div id="home">
     <nav-bar class="home-nav"><div slot="center">购物街</div></nav-bar>
+    <tab-control :titles="titles" 
+    @tabClick="tabClick" 
+    ref="tabControl1"
+    v-show="isTabFixed"
+    ></tab-control>
 
     <scroll class="content" 
     ref="scroll" 
@@ -9,10 +14,13 @@
     @scroll="contentScroll"
     :pull-up-load="true"
     @pullingUp= "loadMore">
-      <home-swiper :banners="banners"></home-swiper>
+      <home-swiper :banners="banners" @swiperImageLoad="swiperImageLoad"></home-swiper>
     <recommend-view :recommends="recommends"></recommend-view>
     <feature-view></feature-view>
-    <tab-control class="tab-control" :titles="titles" @tabClick="tabClick"></tab-control>
+    <tab-control :titles="titles" 
+    @tabClick="tabClick" 
+    ref="tabControl2"
+    ></tab-control>
     <goods-list :goods="showGoods"></goods-list>
     </scroll>
     <back-top @click.native="backClick" v-show="isShow"></back-top>
@@ -60,7 +68,9 @@ export default {
         'sell':{page:0,list:[]}
       },
       currentType:'pop',
-      isShow:false
+      isShow:false,
+      tabOffsetTop:0,
+      isTabFixed:false
     }
   },
   created(){
@@ -73,14 +83,16 @@ export default {
     this.getHomeGoods('sell')
   },
   mounted(){
-    const refresh = debounce(this.$refs.scroll.refresh,50)
-
-    // 3. 监听item中的图片加载完成
+    // 1. 图片加载完成的事件监听
+    const refresh = debounce(this.$refs.scroll.refresh,50)    
     this.$bus.$on('itemImageLoad',()=>{
-      // console.log('-----')
-      // this.$refs.scroll.refresh()
       refresh()
     })
+
+    // 2.获取tabControl的offsetTop
+    // 所有组件都有一个属性$el:用于获取组件中的元素
+    // this.tabOffsetTop = this.$refs.tabControl.$el.offsetTop
+    // console.log(this.tabOffsetTop)
   },
   computed:{
     showGoods(){
@@ -114,15 +126,20 @@ export default {
         this.currentType = 'sell'
         break;
      }
-
+     this.$refs.tabControl1.currentIndex = index
+    this.$refs.tabControl2.currentIndex = index
    },
    backClick(){
      console.log('backClick')
      this.$refs.scroll.scrollTo(0,0)
    },
    contentScroll(position){
+    //  1.判断BackTop是否显示
       // console.log(position)     
-      this.isShow = (-position.y)>1000    
+      this.isShow = (-position.y)>1000  
+      
+      // 2.决定tabControl是否吸顶(position:fixed)
+      this.isTabFixed = (-position.y) > this.tabOffsetTop
    },
    loadMore(){
      console.log('上拉加载更多')
@@ -131,6 +148,10 @@ export default {
     //  重新计算可滚动的区域,因为图片异步加载完成需要一段时间，
     // 所以最开始计算出来的高度，没算上图片高度，太小了
     this.$refs.scroll.refresh()
+   },
+   swiperImageLoad(){
+     console.log(this.$refs.tabControl2.$el.offsetTop)
+     this.tabOffsetTop = this.$refs.tabControl2.$el.offsetTop
    },
 
     /**
@@ -166,18 +187,25 @@ export default {
   background-color: var(--color-tint);
   color: #fff;
 
-  position: fixed;
+  /* 在使用浏览器原生滚动时，为了让导航不跟随一起滚动 */
+  /* position: fixed;
   top: 0;
   left: 0;
   right: 0;
   
-  z-index: 100;
+  z-index: 100; */
 }
 
-.tab-control{
+/* .tab-control{
   position: sticky;
   top: 44px;
   z-index: 100;
+} */
+
+
+.tab-control{
+  position: relative;
+  z-index: 9;
 }
 
 /* 方案2 */
