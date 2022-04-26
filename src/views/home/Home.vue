@@ -3,7 +3,12 @@
   <div id="home">
     <nav-bar class="home-nav"><div slot="center">购物街</div></nav-bar>
 
-    <scroll class="content" ref="scroll" :probe-type="3" @scroll="contentScroll">
+    <scroll class="content" 
+    ref="scroll" 
+    :probe-type="3" 
+    @scroll="contentScroll"
+    :pull-up-load="true"
+    @pullingUp= "loadMore">
       <home-swiper :banners="banners"></home-swiper>
     <recommend-view :recommends="recommends"></recommend-view>
     <feature-view></feature-view>
@@ -28,6 +33,7 @@ import Scroll from 'components/common/scroll/Scroll'
 import BackTop from 'components/content/backTop/BackTop'
 
 import {getHomeMultidata,getHomeGoods} from 'network/home'
+import {debounce} from 'common/utils'
 
 export default {
   name:'Home',
@@ -66,6 +72,16 @@ export default {
     this.getHomeGoods('new')
     this.getHomeGoods('sell')
   },
+  mounted(){
+    const refresh = debounce(this.$refs.scroll.refresh,50)
+
+    // 3. 监听item中的图片加载完成
+    this.$bus.$on('itemImageLoad',()=>{
+      // console.log('-----')
+      // this.$refs.scroll.refresh()
+      refresh()
+    })
+  },
   computed:{
     showGoods(){
       return this.goods[this.currentType].list
@@ -75,6 +91,16 @@ export default {
     /**
      *事件监听相关的方法
     */
+  //  debounce(func,delay){
+  //    let timer = null
+
+  //    return function(...args){
+  //      if(timer) clearTimeout(timer)
+  //      timer = setTimeout(()=>{
+  //        func.apply(this,args)
+  //      },delay)
+  //    }
+  //  },
    tabClick(index){
      console.log(typeof index)
      switch (index){
@@ -95,8 +121,16 @@ export default {
      this.$refs.scroll.scrollTo(0,0)
    },
    contentScroll(position){
-      console.log(position)     
+      // console.log(position)     
       this.isShow = (-position.y)>1000    
+   },
+   loadMore(){
+     console.log('上拉加载更多')
+     this.getHomeGoods(this.currentType)
+
+    //  重新计算可滚动的区域,因为图片异步加载完成需要一段时间，
+    // 所以最开始计算出来的高度，没算上图片高度，太小了
+    this.$refs.scroll.refresh()
    },
 
     /**
@@ -115,6 +149,8 @@ export default {
         console.log(res)
         this.goods[type].list.push(...res.data.list)
         this.goods[type].page += 1 
+
+        this.$refs.scroll.finishPullUp()
       })
     }
   }
