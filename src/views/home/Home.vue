@@ -70,7 +70,8 @@ export default {
       currentType:'pop',
       isShow:false,
       tabOffsetTop:0,
-      isTabFixed:false
+      isTabFixed:false,
+      saveY:0
     }
   },
   created(){
@@ -97,8 +98,18 @@ export default {
   computed:{
     showGoods(){
       return this.goods[this.currentType].list
-    }
+    },
+    
   },
+  activated() {
+      console.log('activated')
+      this.$refs.scroll.scrollTo(0,this.saveY,0)
+      this.$refs.scroll.refresh()
+    },
+    deactivated() {
+      console.log('deactivated')
+      this.saveY = this.$refs.scroll.getScrollY()
+    },
   methods:{
     /**
      *事件监听相关的方法
