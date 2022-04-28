@@ -1,5 +1,5 @@
 <template>
-  <div class="goods-item">
+  <div class="goods-item" @click="itemClick">
     <img :src="goodsItem.show.img" alt="" @load="imageLoad">
     <div class="goods-info">
       <p>{{goodsItem.title}}</p>
@@ -23,6 +23,11 @@ export default {
   methods:{
     imageLoad(){
       this.$bus.$emit('itemImageLoad')
+    },
+    itemClick(){
+      // console.log('跳转到详情页')
+      // 因为在详情页需要有返回功能，所以用push不用replace
+      this.$router.push('/detail/' + this.goodsItem.iid)
     }
   }
 }
