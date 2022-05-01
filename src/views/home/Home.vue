@@ -42,6 +42,7 @@ import BackTop from 'components/content/backTop/BackTop'
 
 import {getHomeMultidata,getHomeGoods} from 'network/home'
 import {debounce} from 'common/utils'
+import {itemListenerMixin} from 'common/mixin'
 
 export default {
   name:'Home',
@@ -57,6 +58,7 @@ export default {
     BackTop
 
   },
+  mixins:[itemListenerMixin],
   data(){
     return {
       banners:[],
@@ -67,11 +69,12 @@ export default {
         'new':{page:0,list:[]},
         'sell':{page:0,list:[]}
       },
-      currentType:'pop',
+      currentType:'pop',   //商品当前类型
       isShow:false,
       tabOffsetTop:0,
       isTabFixed:false,
-      saveY:0
+      saveY:0,     //记录离开的位置
+      // itemImgListener:null   //全局事件监听的函数
     }
   },
   created(){
@@ -83,18 +86,7 @@ export default {
     this.getHomeGoods('new')
     this.getHomeGoods('sell')
   },
-  mounted(){
-    // 1. 图片加载完成的事件监听
-    const refresh = debounce(this.$refs.scroll.refresh,50)    
-    this.$bus.$on('itemImageLoad',()=>{
-      refresh()
-    })
-
-    // 2.获取tabControl的offsetTop
-    // 所有组件都有一个属性$el:用于获取组件中的元素
-    // this.tabOffsetTop = this.$refs.tabControl.$el.offsetTop
-    // console.log(this.tabOffsetTop)
-  },
+  
   computed:{
     showGoods(){
       return this.goods[this.currentType].list
@@ -108,8 +100,30 @@ export default {
     },
     deactivated() {
       console.log('deactivated')
+      // 1.保存离开home时的位置
       this.saveY = this.$refs.scroll.getScrollY()
+
+      // 2.取消全局事件的监听
+      this.$bus.$off('itemImageLoad',this.itemImgListener)
     },
+    mounted(){
+    // // 1. 图片加载完成的事件监听
+    // const refresh = debounce(this.$refs.scroll.refresh,50)
+    
+    // // 对监听的事件进行保存
+    // this.itemImgListener = () =>{
+    //   refresh()      
+    // }
+
+    // this.$bus.$on('homeItemImageLoad',()=>{
+    //   refresh()
+    // })
+
+    // // 2.获取tabControl的offsetTop
+    // // 所有组件都有一个属性$el:用于获取组件中的元素
+    // // this.tabOffsetTop = this.$refs.tabControl.$el.offsetTop
+    // // console.log(this.tabOffsetTop)
+  },
   methods:{
     /**
      *事件监听相关的方法

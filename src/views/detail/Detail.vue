@@ -8,6 +8,7 @@
       <detail-goods-info :detail-info="detailInfo" @imageLoad="imageLoad"></detail-goods-info>
       <detail-param-info :param-info="paramInfo"></detail-param-info>
       <detail-comment-info :comment-info="commentInfo"></detail-comment-info>
+      <goods-list :goods="recommends"></goods-list>
     </scroll>
     
   </div>
@@ -22,9 +23,13 @@ import DetailGoodsInfo from './childComps/DetailGoodsInfo'
 import DetailParamInfo from './childComps/DetailParamInfo'
 import DetailCommentInfo from './childComps/DetailCommentInfo'
 
-import {getDetail,Goods,Shop,GoodsParam} from 'network/detail'
+import {getDetail,Goods,Shop,GoodsParam,getRecommend} from 'network/detail'
 
 import Scroll from 'components/common/scroll/Scroll' 
+import GoodsList from 'components/content/goods/GoodsList'
+import { debounce } from 'common/utils'
+import {itemListenerMixin} from 'common/mixin'
+
 
 export default {
   name:'Detail',
@@ -37,8 +42,9 @@ export default {
     DetailParamInfo,
     DetailCommentInfo,
     Scroll,
-    
+    GoodsList
   },
+  mixins:[itemListenerMixin],
   data(){
     return{
       iid:null,
@@ -48,6 +54,8 @@ export default {
       detailInfo:{},
       paramInfo:{},
       commentInfo: {},
+      recommends:[],
+      // itemImgListener:null,   //全局事件监听的保存
     }      
     },
 
@@ -57,7 +65,7 @@ export default {
 
     // 2.根据iid请求详情数据
     getDetail(this.iid).then(res=>{
-      console.log(res)
+      // console.log(res)
       const data =res.result
       // 1.获取顶部轮播图数据
       this.topImages = data.itemInfo.topImages
@@ -80,6 +88,27 @@ export default {
       }
     })
   
+    // 3.获取推荐数据
+    getRecommend().then(res=>{
+      console.log(res)
+      this.recommends = res.data.list
+    })
+  },
+  mounted(){
+    // // 监听item中的图片加载完成
+    // const refresh = debounce(this.$refs.scroll.refresh,100)
+
+    // // 对监听的时间进行保存
+    // this.itemImgListener = () =>{
+    //   refresh()
+    // }
+
+    // this.$bus.$on('itemImageLoad',this.itemImgListener)
+  },
+  destroyed(){
+    // detail没有keep-alive，所以这里不用deactivated
+    // 取消全局事件的监听
+    this.$bus.$off("itemImageLoad",this.itemImgListener)
   },
   methods:{
     imageLoad(){
