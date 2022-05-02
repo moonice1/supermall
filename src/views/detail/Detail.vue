@@ -1,14 +1,14 @@
 <template>
   <div id="detail">
-    <detail-nav-bar class="detail-nav"></detail-nav-bar>
+    <detail-nav-bar class="detail-nav" @itemClick="titleClick"></detail-nav-bar>
     <scroll class="content" ref="scroll">
       <detail-swiper :top-images="topImages"></detail-swiper>
       <detail-base-info :goods="goods"></detail-base-info>
       <detail-shop-info :shop="shop"></detail-shop-info>
       <detail-goods-info :detail-info="detailInfo" @imageLoad="imageLoad"></detail-goods-info>
-      <detail-param-info :param-info="paramInfo"></detail-param-info>
-      <detail-comment-info :comment-info="commentInfo"></detail-comment-info>
-      <goods-list :goods="recommends"></goods-list>
+      <detail-param-info ref="params" :param-info="paramInfo"></detail-param-info>
+      <detail-comment-info ref="comment" :comment-info="commentInfo"></detail-comment-info>
+      <goods-list ref="recommend" :goods="recommends"></goods-list>
     </scroll>
     
   </div>
@@ -56,6 +56,8 @@ export default {
       commentInfo: {},
       recommends:[],
       // itemImgListener:null,   //全局事件监听的保存
+      themeTopYs:[],
+      getThemeTopY:null
     }      
     },
 
@@ -86,6 +88,8 @@ export default {
       if(data.rate.list){
         this.commentInfo = data.rate.list[0]
       }
+
+
     })
   
     // 3.获取推荐数据
@@ -93,6 +97,16 @@ export default {
       console.log(res)
       this.recommends = res.data.list
     })
+
+    // 4.给getThemeTopY赋值(对给this.themeTopYs赋值的操作进行防抖)
+    this.getThemeTopY = debounce(() => {
+      this.themeTopYs = []; //先清空，不然不止4个值
+      this.themeTopYs.push(0);
+      this.themeTopYs.push(this.$refs.params.$el.offsetTop);
+      this.themeTopYs.push(this.$refs.comment.$el.offsetTop);
+      this.themeTopYs.push(this.$refs.recommend.$el.offsetTop);
+      this.themeTopYs.push(Number.MAX_VALUE); // js里面number的最大值
+    }, 100);
   },
   mounted(){
     // // 监听item中的图片加载完成
@@ -104,7 +118,19 @@ export default {
     // }
 
     // this.$bus.$on('itemImageLoad',this.itemImgListener)
+
   },
+  // updated(){
+  //   // 可以保证里边是一定有值的
+  //   // 传值到themeTopYs,因为update调用比较频繁，有可能传入多组值，所以每次都置空一次
+  //   this.themeTopYs=[]
+  //   this.themeTopYs.push(0)
+  //   this.themeTopYs.push(this.$refs.params.$el.offsetTop)
+  //   this.themeTopYs.push(this.$refs.comment.$el.offsetTop)
+  //   this.themeTopYs.push(this.$refs.recommend.$el.offsetTop)
+  //   console.log(this.themeTopYs)
+  // },
+
   destroyed(){
     // detail没有keep-alive，所以这里不用deactivated
     // 取消全局事件的监听
@@ -114,6 +140,11 @@ export default {
     imageLoad(){
       this.$refs.scroll.refresh()
       // this.newRefresh()
+      this.getThemeTopY()
+    },
+    titleClick(index){
+      console.log(index)
+      this.$refs.scroll.scrollTo(0,-this.themeTopYs[index],100)
     }
   }
 }
