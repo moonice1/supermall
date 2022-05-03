@@ -10,6 +10,7 @@
       <detail-comment-info ref="comment" :comment-info="commentInfo"></detail-comment-info>
       <goods-list ref="recommend" :goods="recommends"></goods-list>
     </scroll>
+    <detail-bottom-bar></detail-bottom-bar>
     
   </div>
 </template>
@@ -22,6 +23,7 @@ import DetailShopInfo from './childComps/DetailShopInfo'
 import DetailGoodsInfo from './childComps/DetailGoodsInfo'
 import DetailParamInfo from './childComps/DetailParamInfo'
 import DetailCommentInfo from './childComps/DetailCommentInfo'
+import DetailBottomBar from './childComps/DetailBottomBar'
 
 import {getDetail,Goods,Shop,GoodsParam,getRecommend} from 'network/detail'
 
@@ -42,7 +44,8 @@ export default {
     DetailParamInfo,
     DetailCommentInfo,
     Scroll,
-    GoodsList
+    GoodsList,
+    DetailBottomBar
   },
   mixins:[itemListenerMixin],
   data(){
@@ -190,6 +193,6 @@ export default {
 }
 
 .content{
-  height: calc(100% - 44px);
+  height: calc(100% - 44px -58px);
 }
 </style>
