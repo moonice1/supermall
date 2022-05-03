@@ -193,6 +193,6 @@ export default {
 }
 
 .content{
-  height: calc(100% - 44px -58px);
+  height: calc(100% - 44px);
 }
 </style>

@@ -36,14 +36,14 @@ export default {
   .bottom-bar{
     height: 58px;
     background-color: #fff;
-    position: relative;
-    /* bottom: 58px; */
+    /* position: relative;
+    bottom: 58px; */
 
     /* 或者 */
-    /* position: fixed;
+    position: fixed;
     left: 0;
     right: 0;
-    bottom: 0; */
+    bottom: 0;
 
     display: flex;
     text-align: center;
