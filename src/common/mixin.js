@@ -19,3 +19,22 @@ export const itemListenerMixin = {
     // console.log('我是混入的内容')
   }
 }
+
+// export const backTopMixin = {
+//   components: {
+//     BackTop
+//   },
+//   data() {
+//     return {
+//       isShowBackTop:false
+//     }
+//   },
+//   methods: {
+//     backTop() {
+//       this.$refs.scroll.scrollTo(0,0,300)
+//     },
+//     listenShowBackTop(position) {
+//       this.isShowBackTop = -position.Y > BACK_POSITION
+//     }
+//   }
+// }

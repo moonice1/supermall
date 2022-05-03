@@ -12,6 +12,7 @@
     </scroll>
     <detail-bottom-bar></detail-bottom-bar>
     
+    <back-top @click.native="backTop" v-show="isShowBackTop"></back-top>
   </div>
 </template>
 
@@ -31,7 +32,7 @@ import Scroll from 'components/common/scroll/Scroll'
 import GoodsList from 'components/content/goods/GoodsList'
 import { debounce } from 'common/utils'
 import {itemListenerMixin} from 'common/mixin'
-
+import BackTop from 'components/content/backTop/BackTop'
 
 export default {
   name:'Detail',
@@ -45,7 +46,8 @@ export default {
     DetailCommentInfo,
     Scroll,
     GoodsList,
-    DetailBottomBar
+    DetailBottomBar,
+    BackTop
   },
   mixins:[itemListenerMixin],
   data(){
@@ -61,7 +63,8 @@ export default {
       // itemImgListener:null,   //全局事件监听的保存
       themeTopYs:[],
       getThemeTopY:null,
-      currentIndex:0
+      currentIndex:0,
+      isShowBackTop:false
     }      
     },
 
@@ -173,6 +176,11 @@ export default {
           this.$refs.nav.currentIndex = this.currentIndex
         }
       }
+      // 判断是否显示直接回到顶部
+      this.isShowBackTop = positionY > 1000
+    },
+    backTop(){
+      this.$refs.scroll.scrollTo(0,0)
     }
   }
 }
