@@ -22,7 +22,7 @@ export default {
   name:"DetailNavBar",
   components:{
     NavBar
-  },
+  },  
   data(){
     return{
       titles:['商品','参数','评论','推荐'],

@@ -1,7 +1,7 @@
 <template>
   <div id="detail">
-    <detail-nav-bar class="detail-nav" @itemClick="titleClick"></detail-nav-bar>
-    <scroll class="content" ref="scroll">
+    <detail-nav-bar class="detail-nav" @itemClick="titleClick" ref="nav"></detail-nav-bar>
+    <scroll class="content" ref="scroll" :probe-type="3" @scroll="contentScroll">
       <detail-swiper :top-images="topImages"></detail-swiper>
       <detail-base-info :goods="goods"></detail-base-info>
       <detail-shop-info :shop="shop"></detail-shop-info>
@@ -57,7 +57,8 @@ export default {
       recommends:[],
       // itemImgListener:null,   //全局事件监听的保存
       themeTopYs:[],
-      getThemeTopY:null
+      getThemeTopY:null,
+      currentIndex:0
     }      
     },
 
@@ -106,6 +107,7 @@ export default {
       this.themeTopYs.push(this.$refs.comment.$el.offsetTop);
       this.themeTopYs.push(this.$refs.recommend.$el.offsetTop);
       this.themeTopYs.push(Number.MAX_VALUE); // js里面number的最大值
+      console.log(this.themeTopYs)
     }, 100);
   },
   mounted(){
@@ -143,8 +145,31 @@ export default {
       this.getThemeTopY()
     },
     titleClick(index){
-      console.log(index)
+      // console.log(index)
       this.$refs.scroll.scrollTo(0,-this.themeTopYs[index],100)
+    },
+    contentScroll(position){
+      // console.log(position)
+      // 1.获取y值
+      const positionY = -position.y
+
+      // 2.positionY和主题中值进行对比
+      let length = this.themeTopYs.length
+      // for(let i = 0;i<length;i++){
+        // if(this.currentIndex !== i &&((i < length-1 && positionY >= this.themeTopYs[i]&&positionY<this.themeTopYs[i+1])||(i==length-1&&positionY >= this.themeTopYs[i]))){
+        //   this.currentIndex = i
+        //   console.log(this.currentIndex)
+        //   this.$refs.nav.currentIndex = this.currentIndex
+        // }
+      // }
+
+      for(let i = 0;i<length-1;i++){
+        if(this.currentIndex !== i &&((i < length-1 && positionY >= this.themeTopYs[i]&&positionY<this.themeTopYs[i+1]))){
+          this.currentIndex = i
+          console.log(this.currentIndex)
+          this.$refs.nav.currentIndex = this.currentIndex
+        }
+      }
     }
   }
 }
