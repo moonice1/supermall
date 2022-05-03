@@ -2,6 +2,11 @@
   <div id="detail">
     <detail-nav-bar class="detail-nav" @itemClick="titleClick" ref="nav"></detail-nav-bar>
     <scroll class="content" ref="scroll" :probe-type="3" @scroll="contentScroll">
+      <!-- 测试 -->
+      <!-- <ul>
+        <li v-for="item in $store.state.cartList">{{item}}</li>
+      </ul> -->
+
       <detail-swiper :top-images="topImages"></detail-swiper>
       <detail-base-info :goods="goods"></detail-base-info>
       <detail-shop-info :shop="shop"></detail-shop-info>
@@ -10,7 +15,7 @@
       <detail-comment-info ref="comment" :comment-info="commentInfo"></detail-comment-info>
       <goods-list ref="recommend" :goods="recommends"></goods-list>
     </scroll>
-    <detail-bottom-bar></detail-bottom-bar>
+    <detail-bottom-bar @addToCart="addToCart"></detail-bottom-bar>
     
     <back-top @click.native="backTop" v-show="isShowBackTop"></back-top>
   </div>
@@ -181,6 +186,20 @@ export default {
     },
     backTop(){
       this.$refs.scroll.scrollTo(0,0)
+    },
+    // 加入到购物车
+    addToCart(){
+      // 1.获取购物车需要展示的当前商品信息
+      const product={}
+      product.image = this.topImages[0]
+      product.title = this.goods.title
+      product.desc = this.goods.desc
+      product.price = this.goods.realPrice
+      product.iid = this.iid
+
+      // 2.将商品添加到购物车
+      this.$store.commit('addCart',product)
+     
     }
   }
 }
