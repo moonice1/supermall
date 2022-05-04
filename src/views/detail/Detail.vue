@@ -39,6 +39,8 @@ import { debounce } from 'common/utils'
 import {itemListenerMixin} from 'common/mixin'
 import BackTop from 'components/content/backTop/BackTop'
 
+import {mapActions} from 'vuex'
+
 export default {
   name:'Detail',
   components:{
@@ -80,7 +82,7 @@ export default {
     // 2.根据iid请求详情数据
     getDetail(this.iid).then(res=>{
       // console.log(res)
-      const data =res.result
+      const data = res.result
       // 1.获取顶部轮播图数据
       this.topImages = data.itemInfo.topImages
 
@@ -106,7 +108,6 @@ export default {
   
     // 3.获取推荐数据
     getRecommend().then(res=>{
-      console.log(res)
       this.recommends = res.data.list
     })
 
@@ -196,10 +197,13 @@ export default {
       product.desc = this.goods.desc
       product.price = this.goods.realPrice
       product.iid = this.iid
-
-      // 2.将商品添加到购物车
-      this.$store.commit('addCart',product)
+      console.log(product)
      
+      // 2.将商品添加到购物车
+      // this.$store.commit('addCart',product)
+
+      this.$store.dispatch('addCart', product)
+      // this.addCart(product)
     }
   }
 }
