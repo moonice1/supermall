@@ -212,6 +212,9 @@ export default {
         //   this.message = ''
         // },1500)
         // console.log(res)
+
+        console.log(this.$toast)
+        this.$toast.show(res,2000)
       })
 
     }

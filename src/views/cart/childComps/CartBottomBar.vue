@@ -67,9 +67,11 @@ export default {
       }
     },
     calcClick(){
-      // 如果一件商品都没选中
-      if(!this.isSelectAll){
-
+      // 如果一个都没选
+      if(!this.cartList.find(item=>item.checked)){
+        this.$toast.show('请选择要购买的商品')
+      }else{
+        this.$toast.show('正在跳转至结算页',300)
       }
     }
   }
