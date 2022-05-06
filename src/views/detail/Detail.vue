@@ -18,6 +18,7 @@
     <detail-bottom-bar @addToCart="addToCart"></detail-bottom-bar>
     
     <back-top @click.native="backTop" v-show="isShowBackTop"></back-top>
+    <toast :message="message" :show="isShowToast"></toast>
   </div>
 </template>
 
@@ -35,6 +36,8 @@ import {getDetail,Goods,Shop,GoodsParam,getRecommend} from 'network/detail'
 
 import Scroll from 'components/common/scroll/Scroll' 
 import GoodsList from 'components/content/goods/GoodsList'
+import Toast from 'components/common/toast/Toast'
+
 import { debounce } from 'common/utils'
 import {itemListenerMixin} from 'common/mixin'
 import BackTop from 'components/content/backTop/BackTop'
@@ -54,7 +57,8 @@ export default {
     Scroll,
     GoodsList,
     DetailBottomBar,
-    BackTop
+    BackTop,
+    Toast
   },
   mixins:[itemListenerMixin],
   data(){
@@ -71,7 +75,9 @@ export default {
       themeTopYs:[],
       getThemeTopY:null,
       currentIndex:0,
-      isShowBackTop:false
+      isShowBackTop:false,
+      message:'',
+      isShowToast:false
     }      
     },
 
@@ -133,24 +139,14 @@ export default {
 
     // this.$bus.$on('itemImageLoad',this.itemImgListener)
 
-  },
-  // updated(){
-  //   // 可以保证里边是一定有值的
-  //   // 传值到themeTopYs,因为update调用比较频繁，有可能传入多组值，所以每次都置空一次
-  //   this.themeTopYs=[]
-  //   this.themeTopYs.push(0)
-  //   this.themeTopYs.push(this.$refs.params.$el.offsetTop)
-  //   this.themeTopYs.push(this.$refs.comment.$el.offsetTop)
-  //   this.themeTopYs.push(this.$refs.recommend.$el.offsetTop)
-  //   console.log(this.themeTopYs)
-  // },
-
+  },  
   destroyed(){
     // detail没有keep-alive，所以这里不用deactivated
     // 取消全局事件的监听
     this.$bus.$off("itemImageLoad",this.itemImgListener)
   },
   methods:{
+    ...mapActions(['addCart']),
     imageLoad(){
       this.$refs.scroll.refresh()
       // this.newRefresh()
@@ -202,8 +198,22 @@ export default {
       // 2.将商品添加到购物车
       // this.$store.commit('addCart',product)
 
-      this.$store.dispatch('addCart', product)
-      // this.addCart(product)
+      // this.$store.dispatch('addCart', product).then(res=>{
+      //   console.log(res)
+      // })
+
+      // 使用了映射mapActions
+      this.addCart(product).then(res=>{
+        // this.isShowToast = true
+        // this.message = res
+
+        // setTimeout(()=>{
+        //   this.isShowToast = false
+        //   this.message = ''
+        // },1500)
+        // console.log(res)
+      })
+
     }
   }
 }
